@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  nginx:
+    container_name: nginx
+    restart: always
+    privileged: true
+    image: waltonmax/nginx:1.16.0
+    network_mode: host
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+    - TERM=linux
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /data/wwwroot:/data/wwwroot:rw
+    - /data/wwwlogs:/data/wwwlogs:rw
+    - /usr/local/nginx/conf:/usr/local/nginx/conf:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"

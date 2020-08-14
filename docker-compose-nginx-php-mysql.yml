@@ -1,0 +1,50 @@
+version: '2'
+services:
+  php:
+    #build:
+    #    context: https://github.com/waltonmax/docker-php.git
+    container_name: php
+    restart: always
+    privileged: true
+    image: waltonmax/php:latest
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /data/wwwroot:/data/wwwroot:rw
+  mariadb:
+    #build:
+    #    context: https://github.com/waltonmax/docker-mariadb.git
+    container_name: mariadb
+    restart: always
+    image: waltonmax/mariadb:latest
+    ports:
+    - "3306:3306"
+    environment:
+    - MYSQL_ROOT_PASSWORD=lookback
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /data/mariadb:/data/mariadb:rw
+  nginx:
+    #build:
+    #    context: https://github.com/waltonmax/docker-nginx.git
+    container_name: nginx
+    restart: always
+    privileged: true
+    image: waltonmax/nginx:latest
+    ports:
+    - "80:80"
+    - "443:443"
+    links:
+    - php:php
+    - mariadb:mysql
+    volumes_from:
+    - php
+    environment:
+    - PHP_FPM=Enable
+    - PHP_FPM_SERVER=php
+    - PHP_FPM_PORT=9000
+    - REWRITE=wordpress
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /data/wwwroot:/data/wwwroot:rw
+    - /data/logs/wwwlogs:/data/wwwlogs:rw
+    - /data/conf/nginx/vhost:/usr/local/nginx/conf/vhost:rw
